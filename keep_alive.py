@@ -12,17 +12,22 @@ app = FastAPI()
 def home():
     return {"status": "running", "note": "NapCat + Bot running on Render"}
 
-# 自动安装并启动 NapCat
+# 自动安装并启动 NapCat（已修复404、权限、xvfb报错）
 def install_and_start_napcat():
-    print("🔧 正在安装系统依赖...")
-    os.system("apt update && apt install -y xvfb wget curl libnotify4 libnss3 libxss1 libasound2")
-    print("📥 正在下载 NapCat...")
-    os.system("wget https://github.com/NapCatQQ/NapCat.OneBotLinux/releases/latest/download/NapCat.OneBotLinux.zip -O napcat.zip")
+    print("📥 正在下载 NapCat（最新可用地址）...")
+    # 1. 下载最新 NapCat 包（修复404）
+    os.system("wget https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.Shell.zip -O napcat.zip")
+    
+    print("📂 正在解压 NapCat...")
+    # 2. 解压
     os.system("unzip -o napcat.zip -d /opt/napcat")
-    print("🚀 启动 NapCat...")
+    
+    print("🚀 启动 NapCat 无头模式（无需xvfb）...")
+    # 3. 无头启动，不需要图形界面/权限
     subprocess.Popen([
-        "xvfb-run", "-a",
-        "/opt/napcat/qq", "--no-sandbox"
+        "/opt/napcat/napcat",
+        "run",
+        "--no-ui"
     ])
 
 # 启动机器人，等待 NapCat 就绪
